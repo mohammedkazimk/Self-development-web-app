@@ -4,16 +4,16 @@ from datetime import datetime,timedelta
 from django.core.paginator import Paginator
 from itertools import groupby
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
+# from django.contrib.auth.decorators import login_required
 from operator import attrgetter
 from django.db.models import Sum,Q
 from .models import *
 
 # Create your views here.
-@login_required(login_url='/login/')
+# @login_required(login_url='/login/')
 def home(request):
     return render(request, 'home.html')
-@login_required(login_url='/login/')
+# @login_required(login_url='/login/')
 def namaz(request):
     NamazReason_obj = NamazReason.objects.order_by('-status__date')
     paginator = Paginator(NamazReason_obj, 20)  # Show 10 entries per page
@@ -21,7 +21,7 @@ def namaz(request):
     page_obj = paginator.get_page(page_number)
     return render(request, 'namaz.html', {'page_obj': page_obj})
 
-@login_required(login_url='/login/')
+# @login_required(login_url='/login/')
 def new_namaz_entry(request):
     obj = NamazStatus.objects.get(date=time().date()) if NamazStatus.objects.filter(date=time().date()).exists() else None
     obj_reason = NamazReason.objects.get(status=obj) if obj and NamazReason.objects.filter(status=obj).exists() else None
@@ -141,7 +141,7 @@ def get_para_and_ruku(current_cumulative_ruku, ruku_para_map):
 
     return None, None
 
-@login_required(login_url='/login/')
+# @login_required(login_url='/login/')
 def quran_daily(request):
     ruku_para_map = {
         (1,16,16),
@@ -250,7 +250,7 @@ def quran_daily(request):
     return render(request, 'quran_daily.html',context=context)
 
 
-@login_required(login_url='/login/')
+# @login_required(login_url='/login/')
 def quran_daily_entry(request):
     if request.method == 'POST':
         date = request.POST.get('date')
@@ -292,7 +292,7 @@ def quran_daily_entry(request):
         return redirect('quran_daily')
     return render(request, 'quran_daily_entry.html')
 
-@login_required(login_url='/login/')
+# @login_required(login_url='/login/')
 def sleep_track_home(request):
     obj = sleep_track.objects.order_by('-date','-id')
     grouped = []
@@ -313,7 +313,7 @@ def sleep_track_home(request):
     return render(request,"sleep_track_home.html",context=context)
 
 
-@login_required(login_url='/login/')
+# @login_required(login_url='/login/')
 def sleep_track_entry(request):
     if request.method == 'POST':
         date = request.POST.get('date')
@@ -375,7 +375,7 @@ def college_studies_home(request):
     }
     return render(request,"college_studies.html",context=context)
 
-@login_required(login_url='/login/')
+# @login_required(login_url='/login/')
 def college_studies_entry(request):
     if request.method == "POST":
         date = request.POST.get('date')
@@ -400,7 +400,7 @@ def college_studies_entry(request):
         return redirect("/college-studies/")
     return render(request,"college_studies_entry.html")
 
-@login_required(login_url='/login/')
+# @login_required(login_url='/login/')
 def generate_pdf(request):
     get = request.GET.get
     from_date = get('from_date')
@@ -467,7 +467,7 @@ def generate_pdf(request):
     return render(request, 'generate_pdf.html', context)
 
 
-@login_required(login_url='/login/')
+# @login_required(login_url='/login/')
 def notes(request):
     query = request.GET.get('q')
     page_obj = college_studies.objects.order_by('-id','-date')
