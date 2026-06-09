@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Namaz Entry</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+body {
+    background:#f3f3f3;
+    padding:20px;
+    font-family: Arial, sans-serif;
+}
+
+.card {
+    max-width: 700px;
+    margin: auto;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+.page-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 14px;
+}
+
+.namaz-section {
+    background: #f2f9f3;
+    padding: 14px;
+    border-radius: 10px;
+    border-left: 4px solid #1abc9c;
+    margin-bottom: 12px;
+}
+
+.namaz-section label {
+    margin-top: 6px;
+    font-weight: 600;
+}
+
+.reason-box {
+    margin-top: 10px;
+    display: none;  /* hidden by default */
+}
+
+.submit-btn {
+    background: linear-gradient(135deg,#11998e,#38ef7d);
+    color: #fff;
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    font-weight: 700;
+    border: none;
+}
+.date-display {
+        margin-bottom: 12px;
+        padding: 8px 12px;
+        border-radius: 6px;
+        background: #fff;
+        border: 1px solid #ced4da;
+        color: #333;
+        height: calc(1.5em + .75rem + 2px);
+        display: flex;
+        align-items: center;
+    }
+
+</style>
+</head>
+<body>
+<div class="card">
+    <div class="page-title"><i class="bi bi-journal-plus"></i> New Namaz Entry</div>
+
+    <form method="post" id="namaz-form">
+    {% csrf_token %}
+
+    <label class="form-label"><i class="bi bi-calendar"></i> Date</label>
+    <div id="today-date" class="date-display form-control" aria-live="polite"></div>
+    <input type="hidden" name="date" id="date-hidden">
+    <!-- FAJAR -->
+    <div class="namaz-section">
+            <label class="mt-2">Fajar – Sunnat</label>
+            <select name="fajar_sunnat" class="form-select namaz-select">
+                <option value="" disabled selected>--select--</option>
+                <option {% if obj and obj.fajar_sunnat == "on_time" %} selected {% endif %} value="on_time">Prayed</option>
+                <option {% if obj and obj.fajar_sunnat == "not_prayed" %} selected {% endif %} value="not_prayed">Not Prayed</option>
+            </select>
+
+            <div class="reason-box">
+                <label>Reason</label>
+                <textarea name="fajar_sunnat_reason" class="form-control" rows="2" placeholder="Reason for missing Fajar Sunnat">{% if obj_reason.fajar_sunnat_reason %} {{ obj_reason.fajar_sunnat_reason }} {% endif %}</textarea>
+            </div>
+            <label>Fajar - Farz</label>
+            <select name="fajar_farz" class="form-select namaz-select" >
+                <option value="" disabled selected>--select--</option>
+                <option {% if obj and obj.fajar_farz == "on_time" %} selected {% endif %} value="on_time">On Time</option>
+                <option {% if obj and obj.fajar_farz == "late" %} selected {% endif %} value="late">Late</option>
+                <option {% if obj and obj.fajar_farz == "in_home" %} selected {% endif %} value="in_home">In Home</option>
+                <option {% if obj and obj.fajar_farz == "not_prayed" %} selected {% endif %} value="not_prayed">Not Prayed</option>
+            </select>
+
+            <div class="reason-box">
+                <label>Reason</label>
+                <textarea name="fajar_farz_reason" class="form-control" rows="2" placeholder="Reason for missing Fajar Farz">{% if obj_reason.fajar_farz_reason %} {{ obj_reason.fajar_farz_reason }} {% endif %}</textarea>
+            </div>
+        </div>
+
+        <!-- ZUHAR -->
+        <div class="namaz-section">
+            <label>Zuhar – Farz</label>
+            <select name="zuhar_farz" class="form-select namaz-select">
+                <option value="" disabled selected>--select--</option>
+                <option {% if obj and obj.zuhar_farz == "on_time" %} selected {% endif %} value="on_time">On Time</option>
+                <option {% if obj and obj.zuhar_farz == "late" %} selected {% endif %} value="late">Late</option>
+                <option {% if obj and obj.zuhar_farz == "in_home" %} selected {% endif %} value="in_home">In Home</option>
+                <option {% if obj and obj.zuhar_farz == "not_prayed" %} selected {% endif %} value="not_prayed">Not Prayed</option>
+            </select>
+
+            <div class="reason-box">
+                <label>Reason</label>
+                <textarea name="zuhar_farz_reason" class="form-control" rows="2" placeholder="Reason for missing Zuhar Farz">{% if obj_reason.zuhar_farz_reason %} {{ obj_reason.zuhar_farz_reason }} {% endif %}</textarea>
+            </div>
+
+            <label class="mt-2">Zuhar – Sunnat</label>
+            <select name="zuhar_sunnat" class="form-select namaz-select" >
+                <option value="" disabled selected>--select--</option>
+                <option {% if obj and obj.zuhar_sunnat == "on_time" %} selected {% endif %} value="on_time">Prayed</option>
+                <option {% if obj and obj.zuhar_sunnat == "not_prayed" %} selected {% endif %} value="not_prayed">Not Prayed</option>
+            </select>
+
+            <div class="reason-box">
+                <label>Reason</label>
+                <textarea name="zuhar_sunnat_reason" class="form-control" rows="2" placeholder="Reason for missing Zuhar Sunnat">{% if obj_reason.zuhar_sunnat_reason %} {{ obj_reason.zuhar_sunnat_reason }} {% endif %}</textarea>
+            </div>
+        </div>
+
+        <!-- ASAR -->
+        <div class="namaz-section">
+            <label>Asar</label>
+            <select name="asar" class="form-select namaz-select">
+                <option value="" disabled selected>--select--</option>
+                <option {% if obj and obj.asar == "on_time" %} selected {% endif %} value="on_time">On Time</option>
+                <option {% if obj and obj.asar == "late" %} selected {% endif %} value="late">Late</option>
+                <option {% if obj and obj.asar == "in_home" %} selected {% endif %} value="in_home">In Home</option>
+                <option {% if obj and obj.asar == "not_prayed" %} selected {% endif %} value="not_prayed">Not Prayed</option>
+            </select>
+
+            <div class="reason-box">
+                <label>Reason</label>
+                <textarea name="asar_reason" class="form-control" rows="2" placeholder="Reason for missing Asar">{% if obj_reason.asar_reason %} {{ obj_reason.asar_reason }} {% endif %}</textarea>
+            </div>
+        </div>
+
+        <!-- MAGHRIB -->
+        <div class="namaz-section">
+            <label>Maghrib – Farz</label>
+            <select name="maghrib_farz" class="form-select namaz-select">
+                <option value="" disabled selected>--select--</option>
+                <option {% if obj and obj.maghrib_farz == "on_time" %} selected {% endif %} value="on_time">On Time</option>
+                <option {% if obj and obj.maghrib_farz == "late" %} selected {% endif %} value="late">Late</option>
+                <option {% if obj and obj.maghrib_farz == "in_home" %} selected {% endif %} value="in_home">In Home</option>
+                <option {% if obj and obj.maghrib_farz == "not_prayed" %} selected {% endif %} value="not_prayed">Not Prayed</option>
+            </select>
+
+            <div class="reason-box">
+                <label>Reason</label>
+                <textarea name="maghrib_farz_reason" class="form-control" rows="2" placeholder="Reason for missing Maghrib Farz">{% if obj_reason.maghrib_farz_reason %} {{ obj_reason.maghrib_farz_reason }} {% endif %}</textarea>
+            </div>
+
+            <label class="mt-2">Maghrib – Sunnat</label>
+            <select name="maghrib_sunnat" class="form-select namaz-select" >
+                <option value="" disabled selected>--select--</option>
+                <option {% if obj and obj.maghrib_sunnat == "on_time" %} selected {% endif %} value="on_time">Prayed</option>
+                <option {% if obj and obj.maghrib_sunnat == "not_prayed" %} selected {% endif %} value="not_prayed">Not Prayed</option>
+            </select>
+
+            <div class="reason-box">
+                <label>Reason</label>
+                <textarea name="maghrib_sunnat_reason" class="form-control" rows="2" placeholder="Reason for missing Maghrib Sunnat">{% if obj_reason.maghrib_sunnat_reason %} {{ obj_reason.maghrib_sunnat_reason }} {% endif %}</textarea>
+            </div>
+        </div>
+
+        <!-- ISHA -->
+        <div class="namaz-section">
+            <label>Isha – Farz</label>
+            <select name="isha_farz" class="form-select namaz-select">
+                <option value="" disabled selected>--select--</option>
+                <option {% if obj and obj.isha_farz == "on_time" %} selected {% endif %} value="on_time">On Time</option>
+                <option {% if obj and obj.isha_farz == "late" %} selected {% endif %} value="late">Late</option>
+                <option {% if obj and obj.isha_farz == "in_home" %} selected {% endif %} value="in_home">In Home</option>
+                <option {% if obj and obj.isha_farz == "not_prayed" %} selected {% endif %} value="not_prayed">Not Prayed</option>
+            </select>
+
+            <div class="reason-box">
+                <label>Reason</label>
+                <textarea name="isha_farz_reason" class="form-control" rows="2" placeholder="Reason for missing Isha Farz">{% if obj_reason.isha_farz_reason %} {{ obj_reason.isha_farz_reason }} {% endif %}</textarea>
+            </div>
+
+            <label class="mt-2">Isha – Sunnat</label>
+            <select name="isha_sunnat" class="form-select namaz-select">
+                <option value="" disabled selected>--select--</option>
+                <option {% if obj and obj.isha_sunnat == "on_time" %} selected {% endif %} value="on_time">Prayed</option>
+                <option {% if obj and obj.isha_sunnat == "not_prayed" %} selected {% endif %} value="not_prayed">Not Prayed</option>
+            </select>
+
+            <div class="reason-box">
+                <label>Reason</label>
+                <textarea name="isha_sunnat_reason" class="form-control" rows="2" placeholder="Reason for missing Isha Sunnat">{% if obj_reason.isha_sunnat_reason %} {{ obj_reason.isha_sunnat_reason }} {% endif %}</textarea>
+            </div>
+
+            <label class="mt-2">Witr</label>
+            <select name="witr" class="form-select namaz-select">
+                <option value="" disabled selected>--select--</option>
+                <option {% if obj and obj.witr == "on_time" %} selected {% endif %} value="on_time">Prayed</option>
+                <option {% if obj and obj.witr == "not_prayed" %} selected {% endif %} value="not_prayed">Not Prayed</option>
+            </select>
+
+            <div class="reason-box">
+                <label>Reason</label>
+                <textarea name="witr_reason" class="form-control" rows="2" placeholder="Reason for missing Witr">{% if obj_reason.witr_reason %} {{ obj_reason.witr_reason }} {% endif %}</textarea>
+            </div>
+        </div>
+
+        <button type="submit" class="submit-btn">
+            <i class="bi bi-check2-circle"></i> Save Entry
+        </button>
+
+    </form>
+</div>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    function toggleReason(select) {
+        // Prefer immediate next sibling
+        let reasonBox = select.nextElementSibling;
+
+        // Fallback search
+        if (!reasonBox || !reasonBox.classList || !reasonBox.classList.contains('reason-box')) {
+            reasonBox = null;
+            let foundThis = false;
+            const children = Array.from(select.parentElement.children);
+            for (let child of children) {
+                if (!foundThis) {
+                    if (child === select) foundThis = true;
+                    continue;
+                }
+                if (child.classList && child.classList.contains('reason-box')) {
+                    reasonBox = child;
+                    break;
+                }
+            }
+        }
+
+        if (!reasonBox) return;
+
+        const needsReason =
+            select.value === "late" ||
+            select.value === "in_home" ||
+            select.value === "not_prayed";
+
+        reasonBox.style.display = needsReason ? "block" : "none";
+    }
+
+    // Apply on page load
+    document.querySelectorAll(".namaz-select").forEach(select => {
+        toggleReason(select);
+
+        // Apply on change
+        select.addEventListener("change", function () {
+            toggleReason(this);
+        });
+    });
+
+});
+(function(){
+        function pad(n){ return n < 10 ? '0'+n : n; }
+        const d = new Date();
+        const display = pad(d.getDate()) + '-' + pad(d.getMonth()+1) + '-' + d.getFullYear();
+        const iso = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+        const el = document.getElementById('today-date');
+        if(el) el.textContent = display;
+        const hidden = document.getElementById('date-hidden');
+        if(hidden) hidden.value = iso;
+    })();
+</script>
+
+</body>
+</html>

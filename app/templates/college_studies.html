@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>College Study Tracker</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --accent: #14b8a6;
+            --bg: #f4f6fb;
+            --card: #ffffff;
+            --text: #111827;
+            --muted: #6b7280;
+            --radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Layout */
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        header {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .title {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            background: var(--primary);
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .btn.secondary {
+            background: #fff;
+            color: var(--text);
+            border: 1px solid #e5e7eb;
+        }
+
+        /* Progress Card */
+        .progress-card {
+            background: var(--card);
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            margin-bottom: 24px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .progress-header span {
+            font-size: 0.9rem;
+            color: var(--muted);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 14px;
+            background: #e5e7eb;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 999px;
+        }
+
+        .overall{
+            width: {{overall_prec}}%;
+        }
+
+        .ml{
+            width: {{ml_prec}}%;
+        }
+
+        .r{
+            width: {{r_prec}}%;
+        }
+
+        .cc{
+            width: {{cc_prec}}%;
+        }
+
+        .st{
+            width: {{st_prec}}%;
+        }
+
+        /* Form Card */
+        .form-card {
+            background: var(--card);
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            margin-bottom: 24px;
+        }
+
+        .form-card h2 {
+            font-size: 1.2rem;
+            margin-bottom: 16px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+        }
+
+        label {
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+            font-size: 0.9rem;
+        }
+
+        .form-actions {
+            margin-top: 16px;
+            text-align: right;
+        }
+
+        /* Table */
+        .table-card {
+            background: var(--card);
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        thead {
+            background: #f9fafb;
+        }
+
+        th,
+        td {
+            padding: 12px 10px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        /* Pagination Wrapper */
+        .pagination-wrapper {
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* Page Button */
+        .page-btn {
+            min-width: 38px;
+            height: 38px;
+            padding: 0 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            background: white;
+            color: #5f34c8;
+            font-weight: bold;
+            text-decoration: none;
+            border: 1px solid #ddd;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.25s ease;
+        }
+
+        /* Hover Effect */
+        .page-btn:hover {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Active Page */
+        .page-btn.active {
+            background: linear-gradient(135deg, #1e90ff, #6a11cb);
+            color: white;
+            border: none;
+        }
+
+        /* Disabled Button */
+        .page-btn.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        /* Responsive Table (Mobile Cards) */
+        @media (max-width: 768px) {
+
+            table,
+            thead,
+            tbody,
+            th,
+            td,
+            tr {
+                display: block;
+            }
+
+            thead {
+                display: none;
+            }
+
+            tr {
+                margin-bottom: 16px;
+                background: #f9fafb;
+                border-radius: 12px;
+                padding: 12px;
+            }
+
+            td {
+                border: none;
+                padding: 6px 0;
+                font-size: 0.85rem;
+            }
+
+            td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                display: block;
+                font-size: 0.7rem;
+                color: var(--muted);
+                margin-bottom: 2px;
+            }
+        }
+
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+        
+    /* Dashboard header wrapper (place this where your dashboard top bar is) */
+    .dashboard-header{
+      max-width:1100px;
+      margin:0 auto;
+      display:flex;
+      align-items:center;
+      justify-content: center;
+      gap:16px;
+    }
+
+    /* Notes button */
+    .btn-notes{
+      display:inline-flex;
+      align-items:center;
+      gap:12px;
+      margin-top: 20px;
+      padding:10px 16px;
+      background:linear-gradient(90deg,#2563eb,#7c3aed);
+      color:#fff;
+      text-decoration:none;
+      font-weight:700;
+      font-size:14px;
+      border-radius:999px;
+      box-shadow: 0 10px 30px rgba(15,23,42,0.08);
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+      will-change: transform;
+    }
+
+    .btn-notes svg{
+      width:18px;
+      height:18px;
+      display:block;
+      flex-shrink:0;
+      fill:currentColor;
+      opacity:0.98;
+    }
+
+    .btn-notes .btn-label{
+      line-height:1;
+    }
+
+    /* optional small counter/badge on the button */
+    .btn-notes .badge{
+      background: rgba(255,255,255,0.12);
+      padding:4px 8px;
+      border-radius:999px;
+      font-size:12px;
+      color:rgba(255,255,255,0.95);
+      font-weight:700;
+    }
+
+    .btn-notes:hover{
+      transform: translateY(-4px);
+      box-shadow: 0 18px 40px rgba(15,23,42,0.14);
+      opacity:0.99;
+    }
+
+    .btn-notes:active{
+      transform: translateY(-1px);
+    }
+
+    .btn-notes:focus{
+      outline: 3px solid rgba(37,99,235,0.18);
+      outline-offset:4px;
+    }
+
+    /* Responsive - shrink for small screens */
+    @media (max-width:640px){
+      .dashboard-header{padding:0 8px; align-items:center;}
+      .dashboard-title h2{font-size:16px;}
+      .btn-notes{padding:9px 12px; gap:10px; font-size:13px;}
+      .btn-notes svg{width:16px;height:16px;}
+      .btn-notes .badge{padding:3px 7px; font-size:11px;}
+    }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <!-- Header -->
+        <header>
+            <a href="/" class="btn secondary">← Back</a>
+            <div class="title">College Study Tracker</div>
+            <a href="/college-studies/entry/" class="btn">+ Add Entry</a>
+        </header>
+        <!-- Progress -->
+        <section class="progress-card">
+            <div class="progress-header">
+                <strong>Overall Study Progress</strong>
+                <span>{{overall}} / 375 hrs</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill overall"></div>
+            </div>
+        </section>
+
+        <section class="progress-card">
+            <div class="progress-header">
+                <strong>Machine Learning Study Progress</strong>
+                <span>{{ml}} / 150 hrs</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill ml"></div>
+            </div>
+        </section>
+
+        <section class="progress-card">
+            <div class="progress-header">
+                <strong>R Programming Study Progress</strong>
+                <span>{{r}} / 135 hrs</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill r"></div>
+            </div>
+        </section>
+
+        <section class="progress-card">
+            <div class="progress-header">
+                <strong>Cloud Computing Study Progress</strong>
+                <span>{{cc}} / 60 hrs</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill cc"></div>
+            </div>
+        </section>
+
+        <section class="progress-card">
+            <div class="progress-header">
+                <strong>Software Testing Study Progress</strong>
+                <span>{{st}} / 30 hrs</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill st"></div>
+            </div>
+        </section>
+
+        <!-- Table -->
+        <section class="table-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Duration</th>
+                        <th>Subject</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in page_obj %}
+                    <tr>
+                        <td data-label="Date">{{i.date|date:"j-m-Y"}}</td>
+                        <td data-label="Start">{{i.start_time|date:"h:i A"}}</td>
+                        <td data-label="End">{{i.end_time|date:"h:i A"}}</td>
+                        <td data-label="Duration">{{i.duration_display}}</td>
+                        <td data-label="Subject">{{i.subject|title}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <!-- Pagination -->
+            <div class="pagination-wrapper">
+                {% if page_obj.has_previous %}
+                <a href="?page={{page_obj.previous_page_number}}" class="page-btn">
+                    <i class="fa-solid fa-angle-left"></i>
+                </a>
+                {% else %}
+                <a href="#" class="page-btn disabled ">
+                    <i class="fa-solid fa-angle-left"></i>
+                </a>
+                {% endif %}
+                {% for i in page_obj.paginator.page_range %}
+                <a href="?page={{i}}" class="page-btn {% if i == page_obj.number %}active{% endif %}">{{i}}</a>
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <a href="?page={{page_obj.next_page_number}}" class="page-btn">
+                    <i class="fa-solid fa-angle-right"></i>
+                </a>
+                {% else %}
+                <a href="#" class="page-btn disabled">
+                    <i class="fa-solid fa-angle-right"></i>
+                </a>
+                {% endif %}
+            </div>
+        </section>
+
+    </div>
+    
+  <footer class="dashboard-header" role="banner">
+    <a class="btn-notes" href="/college-studies/notes/" role="button" aria-label="Open Notes page">
+      <!-- Notes icon (svg) -->
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M7 3a2 2 0 0 0-2 2v14l3-2 3 2V5a2 2 0 0 0-2-2H7zm8 0h-1.5a.5.5 0 0 0 0 1H15v14l3-2 3 2V5a2 2 0 0 0-2-2h-3z"/>
+      </svg>
+
+      <span class="btn-label">Open Notes</span>
+
+      <!-- optional counter: remove if not needed -->
+      <span class="badge">{{count}}</span>
+    </a>
+</footer>
+</body>
+
+</html>

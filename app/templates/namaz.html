@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Namaz Dashboard</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #f4f4f4;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Top bar with entry button */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .topbar-right {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        /* Column Visibility Dropdown */
+        .col-toggle-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .col-toggle-btn {
+            padding: 10px 18px;
+            background: white;
+            color: #5f34c8;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s ease;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .col-toggle-btn:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            background: #fdfdfd;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: white;
+            min-width: 180px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 10;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #eee;
+        }
+
+        .dropdown-content label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #333;
+            transition: background 0.2s;
+        }
+        
+        .dropdown-content label:hover {
+            background-color: #f4f4f4;
+            border-radius: 4px;
+        }
+
+        .show-dropdown {
+            display: block;
+        }
+
+        .add-btn {
+            padding: 10px 18px;
+            background: linear-gradient(135deg, #1e90ff, #6a11cb);
+            color: white;
+            font-size: 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s ease;
+        }
+
+        .add-btn:hover {
+            opacity: 0.9;
+            transform: scale(1.05);
+        }
+
+        /* Table outer wrapper */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        /* Table styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ececec;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+        }
+
+        /* Add vertical lines */
+        th,
+        td {
+            padding: 12px 14px;
+            text-align: center;
+            border-right: 1px solid #d9d9d9;
+            border-bottom: 1px solid #eee;
+            font-size: 15px;
+        }
+
+        tbody tr:hover {
+            background: #fafafa;
+        }
+
+        th {
+            font-size: 15px;
+        }
+
+        .growth-up {
+            color: green;
+            font-weight: bolder;
+            font-size: 18px;
+        }
+
+        .growth-down {
+            color: red;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .growth-equal {
+            color: orange;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .sub-col {
+            font-size: 13px;
+            opacity: 0.9;
+            background: #5f34c8;
+        }
+
+        .icon-lg {
+            font-size: 26px !important;
+            font-weight: bold;
+            /* makes spacing slightly heavier */
+        }
+
+        /* ✔ MOBILE RESPONSIVE IMPROVEMENTS */
+        @media(max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+
+            .topbar-right {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .col-toggle-btn {
+                width: 100%;
+                justify-content: center;
+                box-sizing: border-box;
+            }
+
+            .dropdown-content {
+                width: 100%;
+                box-sizing: border-box;
+                right: auto;
+            }
+
+            .add-btn {
+                text-align: center;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th,
+            td {
+                padding: 8px 6px;
+                font-size: 12px;
+            }
+
+            .add-btn {
+                padding: 8px 14px;
+                font-size: 14px;
+            }
+
+            .growth-up,
+            .growth-down,
+            .growth-equal {
+                font-size: 14px;
+            }
+
+            .sub-col {
+                font-size: 11px;
+            }
+            .page-btn {
+                min-width: 32px;
+                height: 32px;
+                font-size: 13px;
+            }
+        }
+
+        #popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 99;
+        }
+
+        .popup-content {
+            background: #fff;
+            padding: 20px;
+            width: 300px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #0003;
+            animation: pop 0.2s ease;
+        }
+
+        #popup-text {
+            text-align: justify;
+        }
+
+        .close-btn {
+            float: right;
+            font-size: 22px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        @keyframes pop {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        td {
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        td:hover {
+            background: #f4f4f4;
+        }
+        /* Pagination Wrapper */
+
+        .pagination-wrapper {
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* Page Button */
+        .page-btn {
+            min-width: 38px;
+            height: 38px;
+            padding: 0 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            background: white;
+            color: #5f34c8;
+            font-weight: bold;
+            text-decoration: none;
+            border: 1px solid #ddd;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.25s ease;
+        }
+
+        /* Hover Effect */
+        .page-btn:hover {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Active Page */
+        .page-btn.active {
+            background: linear-gradient(135deg, #1e90ff, #6a11cb);
+            color: white;
+            border: none;
+        }
+
+        /* Disabled Button */
+        .page-btn.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="topbar">
+        <a href="/" class="add-btn">← Back</a>
+        <div class="topbar-right">
+            <!-- Column Toggle Dropdown Container -->
+            <div class="col-toggle-container">
+                <button class="col-toggle-btn" onclick="toggleDropdown()">
+                    <i class="fas fa-columns"></i> Columns ▼
+                </button>
+                <!-- Checkboxes to toggle specific table columns dynamically -->
+                <div id="colDropdown" class="dropdown-content">
+                    <div style="padding: 10px; border-bottom: 1px solid #eee; margin-bottom: 5px;">
+                        <strong style="font-size: 14px; color: #5f34c8;">Filter By Type:</strong><br>
+                        <label><input type="radio" name="namaz_filter" value="all" checked onchange="filterNamaz('all')"> All Prayers</label>
+                        <label><input type="radio" name="namaz_filter" value="sunnat" onchange="filterNamaz('sunnat')"> Sunnat Only</label>
+                        <label><input type="radio" name="namaz_filter" value="farz" onchange="filterNamaz('farz')"> Farz Only</label>
+                    </div>
+                    <div style="padding: 0 10px 10px 10px;">
+                        <strong style="font-size: 14px; color: #5f34c8;">Toggle Columns:</strong><br>
+                        <label><input type="checkbox" checked onchange="toggleColumn('.col-date', this)"> Date</label>
+                        <label><input type="checkbox" checked onchange="toggleColumn('.col-fajar', this)"> Fajar</label>
+                        <label><input type="checkbox" checked onchange="toggleColumn('.col-zuhar', this)"> Zuhar</label>
+                        <label><input type="checkbox" checked onchange="toggleColumn('.col-asar', this)"> Asar</label>
+                        <label><input type="checkbox" checked onchange="toggleColumn('.col-magrib', this)"> Magrib</label>
+                        <label><input type="checkbox" checked onchange="toggleColumn('.col-isha', this)"> Isha</label>
+                        <label><input type="checkbox" checked onchange="toggleColumn('.col-percentage', this)"> Percentage</label>
+                        <label><input type="checkbox" checked onchange="toggleColumn('.col-growth', this)"> Growth</label>
+                    </div>
+                </div>
+            </div>
+            <a href="/new-namaz-entry" class="add-btn">+ New Namaz Entry</a>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th rowspan="2" class="col-date">Date</th>
+                    <th colspan="2" class="col-fajar fajar-group">Fajar</th>
+
+                    <th colspan="2" class="col-zuhar zuhar-group">Zuhar</th>
+                    <th rowspan="2" class="col-asar type-farz">Asar</th>
+
+                    <th colspan="2" class="col-magrib magrib-group">Magrib</th>
+
+                    <th colspan="3" class="col-isha isha-group">Isha</th>
+
+                    <th rowspan="2" class="col-percentage">Percentage</th>
+                    <th rowspan="2" class="col-growth">Growth</th>
+                </tr>
+
+                <tr>
+                    <th class="col-fajar type-sunnat">Sunnat</th>
+                    <th class="col-fajar type-farz">Farz</th>
+
+                    <th class="col-zuhar type-farz">Farz</th>
+                    <th class="col-zuhar type-sunnat">Sunnat</th>
+
+
+                    <th class="col-magrib type-farz">Farz</th>
+                    <th class="col-magrib type-sunnat">Sunnat</th>
+
+                    <th class="col-isha type-farz">Farz</th>
+                    <th class="col-isha type-sunnat">Sunnat</th>
+                    <th class="col-isha type-witr">Witr</th>
+
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for entry in page_obj %}
+                <tr>
+                    <td class="col-date">{{ entry.status.date|date:"j-M-Y (D)" }}</td>
+                    <td class="col-fajar type-sunnat" {% if entry.fajar_sunnat_reason %} onclick="showPopup('{{entry.fajar_sunnat_reason}}')" {% endif %}>
+                        {% if entry.status.fajar_sunnat == 'on_time' %}
+                        <i class="fas fa-check-circle" style="color:green;"></i>
+                        {% elif entry.status.fajar_sunnat == 'late' %}
+                        <i class="fas fa-clock" style="color:orange;"></i>
+                        {% elif entry.status.fajar_sunnat == 'in_home' %}
+                        <i class="fas fa-home" style="color:blue;"></i>
+                        {% elif entry.status.fajar_sunnat == 'not_prayed' %}
+                        <i class="fas fa-times-circle" style="color:red;"></i>
+                        {% else %}
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4169E1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="5" y1="5" x2="19" y2="19"/>
+                        </svg>
+                        {% endif %}
+                    </td>
+
+                    <td class="col-fajar type-farz" {% if entry.fajar_farz_reason %} onclick="showPopup('{{entry.fajar_farz_reason}}')" {% endif %}>
+                        {% if entry.status.fajar_farz == 'on_time' %}
+                        <i class="fas fa-check-circle" style="color:green;"></i>
+                        {% elif entry.status.fajar_farz == 'late' %}
+                        <i class="fas fa-clock" style="color:orange;"></i>
+                        {% elif entry.status.fajar_farz == 'in_home' %}
+                        <i class="fas fa-home" style="color:blue;"></i>
+                        {% elif entry.status.fajar_farz == 'not_prayed' %}
+                        <i class="fas fa-times-circle" style="color:red;"></i>
+                        {% else %}
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4169E1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="5" y1="5" x2="19" y2="19"/>
+                        </svg>
+                        {% endif %}
+                    </td>
+
+                    <td class="col-zuhar type-farz" {% if entry.zuhar_farz_reason %} onclick="showPopup('{{entry.zuhar_farz_reason}}')" {% endif %}>
+                        {% if entry.status.zuhar_farz == 'on_time' %}
+                        <i class="fas fa-check-circle" style="color:green;"></i>
+                        {% elif entry.status.zuhar_farz == 'late' %}
+                        <i class="fas fa-clock" style="color:orange;"></i>
+                        {% elif entry.status.zuhar_farz == 'in_home' %}
+                        <i class="fas fa-home" style="color:blue;"></i>
+                        {% elif entry.status.zuhar_farz == 'not_prayed' %}
+                        <i class="fas fa-times-circle" style="color:red;"></i>
+                        {% else %}
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4169E1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="5" y1="5" x2="19" y2="19"/>
+                        </svg>
+                        {% endif %}
+                    </td>
+                    <td class="col-zuhar type-sunnat" {% if entry.zuhar_sunnat_reason %} onclick="showPopup('{{entry.zuhar_sunnat_reason}}')" {% endif %}>
+                        {% if entry.status.zuhar_sunnat == 'on_time' %}
+                        <i class="fas fa-check-circle" style="color:green;"></i>
+                        {% elif entry.status.zuhar_sunnat == 'late' %}
+                        <i class="fas fa-clock" style="color:orange;"></i>
+                        {% elif entry.status.zuhar_sunnat == 'in_home' %}
+                        <i class="fas fa-home" style="color:blue;"></i>
+                        {% elif entry.status.zuhar_sunnat == 'not_prayed' %}
+                        <i class="fas fa-times-circle" style="color:red;"></i>
+                        {% else %}
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4169E1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="5" y1="5" x2="19" y2="19"/>
+                        </svg>
+                        {% endif %}
+                    </td>
+
+                    <td class="col-asar type-farz" {% if entry.asar_reason %} onclick="showPopup('{{entry.asar_reason}}')" {% endif %}>
+                        {% if entry.status.asar == 'on_time' %}
+                        <i class="fas fa-check-circle" style="color:green;"></i>
+                        {% elif entry.status.asar == 'late' %}
+                        <i class="fas fa-clock" style="color:orange;"></i>
+                        {% elif entry.status.asar == 'in_home' %}
+                        <i class="fas fa-home" style="color:blue;"></i>
+                        {% elif entry.status.asar == 'not_prayed' %}
+                        <i class="fas fa-times-circle" style="color:red;"></i>
+                        {% else %}
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4169E1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="5" y1="5" x2="19" y2="19"/>
+                        </svg>
+                        {% endif %}
+                    </td>
+
+                    <td class="col-magrib type-farz" {% if entry.maghrib_farz_reason %} onclick="showPopup('{{entry.maghrib_farz_reason}}')" {% endif %}>
+                        {% if entry.status.maghrib_farz == 'on_time' %}
+                        <i class="fas fa-check-circle" style="color:green;"></i>
+                        {% elif entry.status.maghrib_farz == 'late' %}
+                        <i class="fas fa-clock" style="color:orange;"></i>
+                        {% elif entry.status.maghrib_farz == 'in_home' %}
+                        <i class="fas fa-home" style="color:blue;"></i>
+                        {% elif entry.status.maghrib_farz == 'not_prayed' %}
+                        <i class="fas fa-times-circle" style="color:red;"></i>
+                        {% else %}
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4169E1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="5" y1="5" x2="19" y2="19"/>
+                        </svg>
+                        {% endif %}
+                    </td>
+
+                    <td class="col-magrib type-sunnat" {% if entry.maghrib_sunnat_reason %} onclick="showPopup('{{entry.maghrib_sunnat_reason}}')" {% endif %}>
+                        {% if entry.status.maghrib_sunnat == 'on_time' %}
+                        <i class="fas fa-check-circle" style="color:green;"></i>
+                        {% elif entry.status.maghrib_sunnat == 'late' %}
+                        <i class="fas fa-clock" style="color:orange;"></i>
+                        {% elif entry.status.maghrib_sunnat == 'in_home' %}
+                        <i class="fas fa-home" style="color:blue;"></i>
+                        {% elif entry.status.maghrib_sunnat == 'not_prayed' %}
+                        <i class="fas fa-times-circle" style="color:red;"></i>
+                        {% else %}
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4169E1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="5" y1="5" x2="19" y2="19"/>
+                        </svg>
+                        {% endif %}
+                    </td>
+
+                    <td class="col-isha type-farz" {% if entry.isha_farz_reason %} onclick="showPopup('{{entry.isha_farz_reason}}')" {% endif %}>
+                        {% if entry.status.isha_farz == 'on_time' %}
+                        <i class="fas fa-check-circle" style="color:green;"></i>
+                        {% elif entry.status.isha_farz == 'late' %}
+                        <i class="fas fa-clock" style="color:orange;"></i>
+                        {% elif entry.status.isha_farz == 'in_home' %}
+                        <i class="fas fa-home" style="color:blue;"></i>
+                        {% elif entry.status.isha_farz == 'not_prayed' %}
+                        <i class="fas fa-times-circle" style="color:red;"></i>
+                        {% else %}
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4169E1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="5" y1="5" x2="19" y2="19"/>
+                        </svg>
+                        {% endif %}
+                    </td>
+
+                    <td class="col-isha type-sunnat" {% if entry.isha_sunnat_reason %} onclick="showPopup('{{entry.isha_sunnat_reason}}')" {% endif %}>
+                        {% if entry.status.isha_sunnat == 'on_time' %}
+                        <i class="fas fa-check-circle" style="color:green;"></i>
+                        {% elif entry.status.isha_sunnat == 'late' %}
+                        <i class="fas fa-clock" style="color:orange;"></i>
+                        {% elif entry.status.isha_sunnat == 'in_home' %}
+                        <i class="fas fa-home" style="color:blue;"></i>
+                        {% elif entry.status.isha_sunnat == 'not_prayed' %}
+                        <i class="fas fa-times-circle" style="color:red;"></i>
+                        {% else %}
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4169E1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="5" y1="5" x2="19" y2="19"/>
+                        </svg>
+                        {% endif %}
+                    </td>
+
+                    <td class="col-isha type-witr" {% if entry.witr_reason %} onclick="showPopup('{{entry.witr_reason}}')" {% endif %}>
+                        {% if entry.status.witr == 'on_time' %}
+                        <i class="fas fa-check-circle" style="color:green;"></i>
+                        {% elif entry.status.witr == 'late' %}
+                        <i class="fas fa-clock" style="color:orange;"></i>
+                        {% elif entry.status.witr == 'in_home' %}
+                        <i class="fas fa-home" style="color:blue;"></i>
+                        {% elif entry.status.witr == 'not_prayed' %}
+                        <i class="fas fa-times-circle" style="color:red;"></i>
+                        {% else %}
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4169E1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="5" y1="5" x2="19" y2="19"/>
+                        </svg>
+                        {% endif %}
+                    </td>
+
+                    <td class="col-percentage">{{ entry.status.percentage|floatformat }}%</td>
+
+                    {% if entry.status.growth == 1 %}
+                    <td class="col-growth growth-up">↑</td>
+                    {% elif entry.status.growth == 2 %}
+                    <td class="col-growth growth-equal">→</td>
+                    {% else %}
+                    <td class="col-growth growth-down">↓</td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+    <div id="popup">
+        <div class="popup-content">
+            <span class="close-btn" onclick="closePopup()">&times;</span>
+            <p id="popup-text"></p>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-wrapper">
+    {% if page_obj.has_previous %}
+    <a href="?page={{page_obj.previous_page_number}}" class="page-btn">
+        <i class="fa-solid fa-angle-left"></i>
+    </a>
+    {% else %}
+    <a href="#" class="page-btn disabled ">
+        <i class="fa-solid fa-angle-left"></i>
+    </a>
+    {% endif %}
+    {% for i in page_obj.paginator.page_range %}
+    <a href="?page={{i}}" class="page-btn {% if i == page_obj.number %}active{% endif %}">{{i}}</a>
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+    <a href="?page={{page_obj.next_page_number}}" class="page-btn">
+        <i class="fa-solid fa-angle-right"></i>
+    </a>
+    {% else %}
+    <a href="#" class="page-btn disabled">
+        <i class="fa-solid fa-angle-right"></i>
+    </a>
+    {% endif %}
+
+    <script>
+        function showPopup(message) {
+            document.getElementById("popup-text").innerText = message;
+            document.getElementById("popup").style.display = "flex";
+        }
+
+        function closePopup() {
+            document.getElementById("popup").style.display = "none";
+        }
+
+        // --- Column Visibility Feature ---
+        
+        // Toggle the visibility of the dropdown menu
+        function toggleDropdown() {
+            document.getElementById("colDropdown").classList.toggle("show-dropdown");
+        }
+
+        // Close dropdown when clicking outside of it
+        window.onclick = function(event) {
+            if (!event.target.closest('.col-toggle-btn') && !event.target.closest('.dropdown-content')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show-dropdown')) {
+                        openDropdown.classList.remove('show-dropdown');
+                    }
+                }
+            }
+        }
+
+        let currentFilter = 'all'; // can be 'all', 'sunnat', 'farz'
+        let hiddenCols = [];
+
+        function updateTableVisibility() {
+            // 1. Reset everything to visible
+            document.querySelectorAll('th, td').forEach(el => el.style.display = '');
+
+            // 2. Base colspans
+            let counts = { fajar: 2, zuhar: 2, magrib: 2, isha: 3 };
+
+            // 3. Apply Filter 'sunnat' or 'farz'
+            if (currentFilter === 'sunnat') {
+                document.querySelectorAll('.type-farz, .type-witr').forEach(el => el.style.display = 'none');
+                counts = { fajar: 1, zuhar: 1, magrib: 1, isha: 1 };
+            } else if (currentFilter === 'farz') {
+                document.querySelectorAll('.type-sunnat, .type-witr').forEach(el => el.style.display = 'none');
+                counts = { fajar: 1, zuhar: 1, magrib: 1, isha: 1 };
+            }
+
+            // 4. Update group colspans safely
+            let fGrp = document.querySelector('.fajar-group');
+            let zGrp = document.querySelector('.zuhar-group');
+            let mGrp = document.querySelector('.magrib-group');
+            let iGrp = document.querySelector('.isha-group');
+
+            if (fGrp) fGrp.setAttribute('colspan', counts.fajar);
+            if (zGrp) zGrp.setAttribute('colspan', counts.zuhar);
+            if (mGrp) mGrp.setAttribute('colspan', counts.magrib);
+            if (iGrp) iGrp.setAttribute('colspan', counts.isha);
+
+            // 5. Hide specific columns triggered by checkboxes
+            hiddenCols.forEach(colClass => {
+                document.querySelectorAll(colClass).forEach(el => el.style.display = 'none');
+            });
+        }
+
+        // Triggered by Radio buttons
+        function filterNamaz(type) {
+            currentFilter = type;
+            updateTableVisibility();
+        }
+
+        // Triggered by Checkboxes
+        function toggleColumn(colSelector, checkboxElem) {
+            if (checkboxElem.checked) {
+                hiddenCols = hiddenCols.filter(c => c !== colSelector);
+            } else {
+                if (!hiddenCols.includes(colSelector)) hiddenCols.push(colSelector);
+            }
+            updateTableVisibility();
+        }
+    </script>
+
+</body>
+
+</html>

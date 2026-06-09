@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Sleep Entry — Add Sleep</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+  --bg-1: #f8fbff;
+  --bg-2: #e9f7fb;
+  --card: #ffffff;
+  --accent: #2563eb;
+  --accent-2: #06b6d4;
+  --muted: #64748b;
+  --radius: 14px;
+  --shadow: 0 12px 30px rgba(12, 20, 36, 0.08);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family: Inter, "Segoe UI", system-ui, -apple-system, "Segoe UI Emoji", Arial;
+  background: linear-gradient(180deg, var(--bg-1), var(--bg-2));
+  color:#072026;
+  -webkit-font-smoothing:antialiased;
+  padding:20px;
+}
+
+/* Page layout */
+.page{max-width:920px;margin:0 auto;display:flex;flex-direction:column;min-height:100vh}
+.site-header{
+  display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px;
+}
+.site-header h1{font-size:20px;margin-bottom:4px;color:#062634}
+.subtitle{font-size:13px;color:var(--muted)}
+
+/* Buttons */
+.btn{
+  display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;border:none;cursor:pointer;text-decoration:none;font-weight:600;
+}
+.btn.ghost{
+  background:transparent;color:#0b2530;border:1px solid rgba(11,37,48,0.06);
+  padding:8px 10px;
+}
+.btn.primary{
+  background: linear-gradient(90deg,var(--accent-2),var(--accent));
+  color:white;box-shadow:0 10px 24px rgba(37,99,235,0.16);border:none;padding:12px 16px;border-radius:12px;
+  transition: transform .14s ease, box-shadow .14s ease;
+}
+.btn.primary:hover{transform:translateY(-3px);box-shadow:0 18px 38px rgba(37,99,235,0.18)}
+.btn.secondary{
+  background:transparent;border:1px solid rgba(11,37,48,0.06);color:#0b2530;padding:10px 14px;border-radius:10px;
+}
+
+/* Container & Card */
+.container{flex:1;display:flex;align-items:flex-start;justify-content:center;padding-bottom:18px}
+.card{
+  width:100%;
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:20px;
+  box-shadow:var(--shadow);
+  overflow:visible;
+}
+
+/* Form layout */
+.sleep-form{display:flex;flex-direction:column;gap:14px}
+.field{display:flex;flex-direction:column;gap:8px}
+.field.full{width:100%}
+
+label{font-size:13px;font-weight:700;color:#083344}
+input[type="date"],
+input[type="time"],
+textarea{
+  padding:12px 14px;border-radius:10px;border:1px solid rgba(6,40,61,0.06);font-size:14px;background:#fbfeff;outline:none;
+  transition: box-shadow .12s ease, border-color .12s ease;
+}
+input:focus,textarea:focus{
+  border-color:var(--accent);
+  box-shadow:0 6px 20px rgba(37,99,235,0.08);
+}
+
+/* Grid for two inputs side-by-side on wider screens */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* Actions row */
+.actions{display:flex;gap:10px;align-items:center;justify-content:flex-start;margin-top:2px}
+.hint{font-size:13px;color:var(--muted);margin-top:10px}
+
+/* Footer */
+.site-footer{display:flex;justify-content:center;padding:20px 0;color:var(--muted);font-size:13px}
+
+/* Small screens: single column, bigger tappable areas */
+@media (max-width:640px){
+  .page{padding:14px}
+  .site-header{flex-direction:row;align-items:flex-start}
+  .grid{grid-template-columns:1fr}
+  .btn.primary{width:100%}
+  .actions{flex-direction:column;align-items:stretch}
+  input[type="date"],input[type="time"],textarea{font-size:16px;padding:14px}
+}
+
+/* Polished visuals for large screens */
+@media (min-width:900px){
+  .card{padding:28px}
+  .site-header h1{font-size:22px}
+  .subtitle{font-size:14px}
+}
+
+  </style>
+</head>
+<body>
+
+  <div class="page">
+    <header class="site-header">
+      <div>
+        <h1>🛌 Add Sleep Entry</h1>
+      </div>
+      <a class="btn ghost" href="/sleep-tracking/">← Back</a>
+    </header>
+
+    <main class="container">
+
+      <section class="card">
+        <form action="" method="POST" class="sleep-form" autocomplete="off" novalidate>
+            {% csrf_token %}
+          <!-- Date -->
+          <div class="field full">
+            <label for="date">Date</label>
+            <input id="date" name="date" type="date" required >
+          </div>
+
+          <!-- Times in two columns on wide screens -->
+          <div class="grid">
+            <div class="field">
+              <label for="sleep_time">Sleep time</label>
+              <input id="sleep_time" name="sleep_time" type="time" required />
+            </div>
+
+            <div class="field">
+              <label for="wake_time">Wake-up time</label>
+              <input id="wake_time" name="wake_time" type="time" required />
+            </div>
+          </div>
+
+          <div class="actions">
+            <button type="submit" class="btn primary">💾 Save Entry</button>
+            <button type="reset" class="btn secondary">Reset</button>
+          </div>
+        </form>
+      </section>
+    </main>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Entry</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: #ffffff;
+            width: 100%;
+            max-width: 500px;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            background: #f1f1f1;
+            padding: 8px 14px;
+            border-radius: 8px;
+            color: #333;
+            font-size: 14px;
+            margin-right: 12px;
+        }
+
+        .back-btn:hover {
+            background: #e0e0e0;
+        }
+
+        h2 {
+            font-size: 20px;
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 4px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .time-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .time-group div {
+            flex: 1;
+        }
+
+        textarea {
+            resize: none;
+            height: 90px;
+        }
+
+        .submit-btn {
+            background: #667eea;
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            background: #5563d6;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+
+            h2 {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="header">
+            <a href="/college-studies/" class="back-btn">← Back</a>
+            <h2>College Study Entry</h2>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div>
+                <label>Date</label>
+                <input name="date" type="date" required>
+            </div>
+
+            <div class="time-group">
+                <div>
+                    <label>Start Time</label>
+                    <input name="start_time" type="time" required>
+                </div>
+
+                <div>
+                    <label>End Time</label>
+                    <input name="end_time" type="time" required>
+                </div>
+            </div>
+
+            <div>
+                <label>Subject</label>
+                <select name="subject" required>
+                    <option value="" disabled selected>Select Subject</option>
+                    <option value="machine learning">Machine Learning</option>
+                    <option value="r programming">R Programming</option>
+                    <option value="cloud computing">Cloud Computing</option>
+                    <option value="software testing">Software Testing</option>
+                </select>
+            </div>
+
+            <div>
+                <label>Notes</label>
+                <textarea name="note" placeholder="Write what you studied..."></textarea>
+            </div>
+
+            <button class="submit-btn">Save Study Entry</button>
+        </form>
+    </div>
+
+</body>
+</html>

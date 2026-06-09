@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 40px;
+            background: #eef2f3;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 350px;
+            margin-left: 20px;
+        }
+
+        /* MAIN BOX */
+        .box {
+            width: 300px;
+            padding: 25px;
+            border-radius: 16px;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            text-decoration: none;
+            transition: 0.3s ease;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(135deg, #4b79a1, #283e51);
+            /* default */
+        }
+
+        .box:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.20);
+        }
+
+        /* QURAN MAIN BOX NEW COLOR */
+        .quran {
+            background: linear-gradient(135deg, #0bab64, #3bb78f);
+        }
+        /* SLEEP TRACKING MAIN BOX NEW COLOR */
+        .sleep {
+            background: linear-gradient(135deg, #ff512f, #dd2476);
+        }
+        .studies{
+            background: linear-gradient(135deg, rgb(6, 160, 255),rgb(29, 163, 235));
+        }
+        .report {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+        }
+        /* Mobile */
+        @media(max-width: 600px) {
+            .box {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- NAMAZ -->
+        <a href="/namaz/" class="box">
+            Namaz <span class="arrow">→</span>
+        </a>
+
+        <!-- QURAN -->
+        <a href="/quran/daily/" class="box quran">
+            Daily Quran <span class="arrow">→</span>
+        </a>
+
+        <!-- Sleep Tracking -->
+         <a href="/sleep-tracking/" class="box sleep">
+            Sleep Tracking <span class="arrow">→</span>
+         </a>
+
+        <!-- Studies  -->
+         <a href="/college-studies/" class="box studies">
+            College Studies<span class="arrow">→</span>
+         </a>
+
+        <!-- Generate PDF Report -->
+        <a href="{% url 'generate_pdf' %}" class="box report">
+            Generate PDF Report <span class="arrow">→</span>
+        </a>
+    </div>
+
+</body>
+
+</html>

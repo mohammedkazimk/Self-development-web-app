@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Daily Quran Entry</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Set today's date (fixed)
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      const iso = `${yyyy}-${mm}-${dd}`;
+      document.getElementById('date').value = iso;
+    });
+  </script>
+</head>
+
+<body class="bg-gradient-to-br from-emerald-100 via-white to-emerald-200 min-h-screen flex items-center justify-center p-6 sm:p-6">
+
+  <div class="w-full max-w-2xl">
+
+    <!-- Card -->
+    <div class="bg-white/90 backdrop-blur-xl shadow-2xl rounded-3xl p-8">
+
+      <!-- Header -->
+      <div class="mb-8 text-center">
+        <h1 class="text-3xl font-bold text-emerald-800">Daily Quran Entry</h1>
+        <p class="text-sm text-gray-500 mt-2">Record your daily Quran reading with sincerity</p>
+      </div>
+
+      <!-- Form -->
+      <form class="space-y-6" method="post">
+        {% csrf_token %}
+        <!-- Date -->
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">Date (Today)</label>
+          <input type="date" name="date" id="date" readonly
+                 class="w-full rounded-2xl border-2 border-emerald-100 bg-emerald-50 px-4 py-3 text-gray-700 shadow-inner focus:outline-none" px-4 py-3 text-gray-700 focus:outline-none" />
+        </div>
+
+        <!-- Rukus -->
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">Rukus Read Today</label>
+          <input type="number" name="ruku" id="ruku" min="1"
+                 class="w-full rounded-2xl border-2 border-emerald-200 bg-white px-4 py-3 shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" />
+        </div>
+
+        <!-- Pages -->
+        <div class="block text-sm font-medium text-gray-600 mb-1">
+          <label class="block text-sm font-medium text-gray-600 mb-1">Pages Read Today</label>
+          <input type="number" name="pages" min="1" step="any"
+                 class="w-full rounded-2xl border-2 border-emerald-200 bg-white px-4 py-3 shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" />
+        </div>
+
+        <!-- Time -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-600 mb-1">Start Time</label>
+            <input type="time" name="start_time"
+                   class="w-full rounded-2xl border-2 border-emerald-200 bg-white px-4 py-3 shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-600 mb-1">End Time</label>
+            <input type="time" name="end_time"
+                   class="w-full rounded-2xl border-2 border-emerald-200 bg-white px-4 py-3 shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" />
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <div class="pt-4">
+          <button type="submit"
+                  class="w-full bg-gradient-to-r from-emerald-600 to-green-500 text-white font-semibold py-3 rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.01] transition">
+            Save Entry
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+
+    <!-- Footer note -->
+    <!-- <p class="text-center text-xs text-gray-400 mt-6">
+      “Indeed, in the remembrance of Allah do hearts find rest.” — Qur’an 13:28
+    </p> -->
+
+  </div>
+
+</body>
+</html>

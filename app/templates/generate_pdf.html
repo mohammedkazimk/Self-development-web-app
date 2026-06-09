@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate PDF Report — Let's Progress</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 24px;
+            background: #eef2f3;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        .form-card {
+            max-width: 480px;
+            background: #fff;
+            padding: 28px 32px;
+            border-radius: 16px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 24px;
+        }
+
+        .form-card h1 {
+            margin: 0 0 20px;
+            font-size: 1.35rem;
+            color: #283e51;
+        }
+
+        .form-row {
+            margin-bottom: 16px;
+        }
+
+        .form-row label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+
+        .form-row input[type="date"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+
+        .check-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px 24px;
+            margin-top: 8px;
+        }
+
+        .check-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .check-group input {
+            width: 18px;
+            height: 18px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4b79a1, #283e51);
+            color: #fff;
+            margin-top: 8px;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.95;
+        }
+
+        .btn-print {
+            background: linear-gradient(135deg, #0bab64, #059669);
+            color: #fff;
+            margin-left: 8px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 16px;
+            color: #4b79a1;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* A4 report container — screen preview */
+        .a4-wrapper {
+            margin-top: 24px;
+        }
+
+        .a4-page {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto 20px;
+            padding: 15mm;
+            background: #fff;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+            font-size: 11px;
+        }
+
+        .report-title {
+            text-align: center;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #1a1a1a;
+        }
+
+        .report-dates {
+            text-align: center;
+            color: #555;
+            margin-bottom: 16px;
+            font-size: 12px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            margin: 14px 0 8px;
+            color: #283e51;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 4px;
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+        }
+
+        .report-table th,
+        .report-table td {
+            border: 1px solid #d1d5db;
+            padding: 6px 8px;
+            text-align: center;
+        }
+
+        .report-table th {
+            background: #4b79a1;
+            color: #fff;
+            font-weight: 600;
+            font-size: 10px;
+        }
+
+        .report-table td {
+            color: #333;
+        }
+
+        .report-table tbody tr:nth-child(even) {
+            background: #f9fafb;
+        }
+
+        .status-ok {
+            color: #059669;
+        }
+
+        .status-late {
+            color: #d97706;
+        }
+
+        .status-miss {
+            color: #dc2626;
+        }
+
+        .status-home {
+            color: #2563eb;
+        }
+
+        /* Print: only A4 content, no form */
+        @media print {
+            body {
+                background: #fff;
+                padding: 0;
+            }
+
+            .form-card,
+            .back-link,
+            .btn-print,
+            .a4-wrapper .no-print {
+                display: none !important;
+            }
+
+            .a4-page {
+                width: 210mm;
+                min-height: 297mm;
+                margin: 0;
+                padding: 15mm;
+                box-shadow: none;
+                page-break-after: always;
+            }
+
+            .a4-page:last-child {
+                page-break-after: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <a href="{% url 'home' %}" class="back-link">← Back to home</a>
+
+    <div class="form-card">
+        <h1>Generate PDF Report</h1>
+        <form method="get" action="">
+            <div class="form-row">
+                <label>From date</label>
+                <input type="date" name="from_date" value="{{ from_date|default:'' }}" required>
+            </div>
+            <div class="form-row">
+                <label>To date</label>
+                <input type="date" name="to_date" value="{{ to_date|default:'' }}" required>
+            </div>
+            <div class="form-row">
+                <label>Include data</label>
+                <div class="check-group">
+                    <label><input type="checkbox" name="namaz" {% if include_namaz %}checked{% endif %}> Namaz</label>
+                    <label><input type="checkbox" name="quran" {% if include_quran %}checked{% endif %}> Quran</label>
+                    <label><input type="checkbox" name="sleep" {% if include_sleep %}checked{% endif %}> Sleep</label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Generate report</button>
+        </form>
+    </div>
+
+    {% if show_report %}
+    <div class="a4-wrapper">
+        <div class="no-print" style="text-align:center; margin-bottom:12px;">
+            <button type="button" class="btn btn-print" onclick="window.print();">Save as PDF / Print</button>
+        </div>
+
+        <div class="a4-page">
+            <div class="report-title">Let's Progress — Report</div>
+            <div class="report-dates">{% if report_from_date %}{{ report_from_date|date:"d M Y" }}{% else %}{{ from_date }}{% endif %} to {% if report_to_date %}{{ report_to_date|date:"d M Y" }}{% else %}{{ to_date }}{% endif %}</div>
+
+            {% if include_namaz and namaz_entries %}
+            <div class="section-title">Namaz</div>
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Fajar S</th>
+                        <th>Fajar F</th>
+                        <th>Zuhar F</th>
+                        <th>Zuhar S</th>
+                        <th>Asar</th>
+                        <th>Maghrib F</th>
+                        <th>Maghrib S</th>
+                        <th>Isha F</th>
+                        <th>Isha S</th>
+                        <th>Witr</th>
+                        <th>%</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in namaz_entries %}
+                    <tr>
+                        <td style="text-align: left;">{{ entry.status.date|date:"d-M-y (D)" }}</td>
+                        <td class="{% if entry.status.fajar_sunnat == 'on_time' %}status-ok{% elif entry.status.fajar_sunnat == 'late' %}status-late{% elif entry.status.fajar_sunnat == 'not_prayed' %}status-miss{% elif entry.status.fajar_sunnat == 'in_home' %}status-home{% endif %}">
+                            {% if entry.status.fajar_sunnat == 'on_time' %}✓{% elif entry.status.fajar_sunnat == 'late' %}L{% elif entry.status.fajar_sunnat == 'in_home' %}H{% elif entry.status.fajar_sunnat == 'not_prayed' %}✗{% else %}—{% endif %}
+                        </td>
+                        <td class="{% if entry.status.fajar_farz == 'on_time' %}status-ok{% elif entry.status.fajar_farz == 'late' %}status-late{% elif entry.status.fajar_farz == 'not_prayed' %}status-miss{% elif entry.status.fajar_farz == 'in_home' %}status-home{% endif %}">
+                            {% if entry.status.fajar_farz == 'on_time' %}✓{% elif entry.status.fajar_farz == 'late' %}L{% elif entry.status.fajar_farz == 'in_home' %}H{% elif entry.status.fajar_farz == 'not_prayed' %}✗{% else %}—{% endif %}
+                        </td>
+                        <td class="{% if entry.status.zuhar_farz == 'on_time' %}status-ok{% elif entry.status.zuhar_farz == 'late' %}status-late{% elif entry.status.zuhar_farz == 'not_prayed' %}status-miss{% elif entry.status.zuhar_farz == 'in_home' %}status-home{% endif %}">
+                            {% if entry.status.zuhar_farz == 'on_time' %}✓{% elif entry.status.zuhar_farz == 'late' %}L{% elif entry.status.zuhar_farz == 'in_home' %}H{% elif entry.status.zuhar_farz == 'not_prayed' %}✗{% else %}—{% endif %}
+                        </td>
+                        <td class="{% if entry.status.zuhar_sunnat == 'on_time' %}status-ok{% elif entry.status.zuhar_sunnat == 'late' %}status-late{% elif entry.status.zuhar_sunnat == 'not_prayed' %}status-miss{% elif entry.status.zuhar_sunnat == 'in_home' %}status-home{% endif %}">
+                            {% if entry.status.zuhar_sunnat == 'on_time' %}✓{% elif entry.status.zuhar_sunnat == 'late' %}L{% elif entry.status.zuhar_sunnat == 'in_home' %}H{% elif entry.status.zuhar_sunnat == 'not_prayed' %}✗{% else %}—{% endif %}
+                        </td>
+                        <td class="{% if entry.status.asar == 'on_time' %}status-ok{% elif entry.status.asar == 'late' %}status-late{% elif entry.status.asar == 'not_prayed' %}status-miss{% elif entry.status.asar == 'in_home' %}status-home{% endif %}">
+                            {% if entry.status.asar == 'on_time' %}✓{% elif entry.status.asar == 'late' %}L{% elif entry.status.asar == 'in_home' %}H{% elif entry.status.asar == 'not_prayed' %}✗{% else %}—{% endif %}
+                        </td>
+                        <td class="{% if entry.status.maghrib_farz == 'on_time' %}status-ok{% elif entry.status.maghrib_farz == 'late' %}status-late{% elif entry.status.maghrib_farz == 'not_prayed' %}status-miss{% elif entry.status.maghrib_farz == 'in_home' %}status-home{% endif %}">
+                            {% if entry.status.maghrib_farz == 'on_time' %}✓{% elif entry.status.maghrib_farz == 'late' %}L{% elif entry.status.maghrib_farz == 'in_home' %}H{% elif entry.status.maghrib_farz == 'not_prayed' %}✗{% else %}—{% endif %}
+                        </td>
+                        <td class="{% if entry.status.maghrib_sunnat == 'on_time' %}status-ok{% elif entry.status.maghrib_sunnat == 'late' %}status-late{% elif entry.status.maghrib_sunnat == 'not_prayed' %}status-miss{% elif entry.status.maghrib_sunnat == 'in_home' %}status-home{% endif %}">
+                            {% if entry.status.maghrib_sunnat == 'on_time' %}✓{% elif entry.status.maghrib_sunnat == 'late' %}L{% elif entry.status.maghrib_sunnat == 'in_home' %}H{% elif entry.status.maghrib_sunnat == 'not_prayed' %}✗{% else %}—{% endif %}
+                        </td>
+                        <td class="{% if entry.status.isha_farz == 'on_time' %}status-ok{% elif entry.status.isha_farz == 'late' %}status-late{% elif entry.status.isha_farz == 'not_prayed' %}status-miss{% elif entry.status.isha_farz == 'in_home' %}status-home{% endif %}">
+                            {% if entry.status.isha_farz == 'on_time' %}✓{% elif entry.status.isha_farz == 'late' %}L{% elif entry.status.isha_farz == 'in_home' %}H{% elif entry.status.isha_farz == 'not_prayed' %}✗{% else %}—{% endif %}
+                        </td>
+                        <td class="{% if entry.status.isha_sunnat == 'on_time' %}status-ok{% elif entry.status.isha_sunnat == 'late' %}status-late{% elif entry.status.isha_sunnat == 'not_prayed' %}status-miss{% elif entry.status.isha_sunnat == 'in_home' %}status-home{% endif %}">
+                            {% if entry.status.isha_sunnat == 'on_time' %}✓{% elif entry.status.isha_sunnat == 'late' %}L{% elif entry.status.isha_sunnat == 'in_home' %}H{% elif entry.status.isha_sunnat == 'not_prayed' %}✗{% else %}—{% endif %}
+                        </td>
+                        <td class="{% if entry.status.witr == 'on_time' %}status-ok{% elif entry.status.witr == 'late' %}status-late{% elif entry.status.witr == 'not_prayed' %}status-miss{% elif entry.status.witr == 'in_home' %}status-home{% endif %}">
+                            {% if entry.status.witr == 'on_time' %}✓{% elif entry.status.witr == 'late' %}L{% elif entry.status.witr == 'in_home' %}H{% elif entry.status.witr == 'not_prayed' %}✗{% else %}—{% endif %}
+                        </td>
+                        <td>{{ entry.status.percentage|floatformat:0 }}%</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <p style="font-size:10px; color:#666;">✓ On time &nbsp; L Late &nbsp; H In home &nbsp; ✗ Not prayed &nbsp; —
+                Not marked</p>
+            {% endif %}
+
+            {% if include_quran and quran_entries %}
+            <div class="section-title">Quran (daily reading)</div>
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Ruku</th>
+                        <th>Pages</th>
+                        <th>Time</th>
+                        <th>Duration</th>
+                        <th>Speed (p/hr)</th>
+                        <th>Points</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in quran_entries %}
+                    <tr>
+                        <td>{{ r.date|date:"d-M-y (D)" }}</td>
+                        <td>{{ r.ruku }}</td>
+                        <td>{{ r.pages|floatformat:1|default:"—" }}</td>
+                        <td>{{ r.start_time|time:"h:i A" }} - {{ r.end_time|time:"h:i A" }}</td>
+                        <td>{{ r.duration_display|default:"—" }}</td>
+                        <td>{{ r.speed|floatformat:1|default:"—" }}</td>
+                        <td>{{ r.points }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+
+            {% if include_sleep and sleep_entries %}
+            <div class="section-title">Sleep</div>
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Sleep time</th>
+                        <th>Wake time</th>
+                        <th>Duration</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in sleep_entries %}
+                    <tr>
+                        <td>{{ s.date|date:"d-M-y (D)" }}</td>
+                        <td>{{ s.sleep_time|time:"h:i A" }}</td>
+                        <td>{{ s.wakeup_time|time:"h:i A" }}</td>
+                        <td>{{ s.duration_display|default:"—" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+
+            {% if show_report and not namaz_entries and not quran_entries and not sleep_entries %}
+            <p style="color:#666;">No records in this date range for the selected data.</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</body>
+
+</html>

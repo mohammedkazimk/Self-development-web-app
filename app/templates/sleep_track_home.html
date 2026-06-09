@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Sleep Tracker — Dashboard</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+        :root{
+    --bg: #f7fbff;
+    --card: #ffffff;
+    --muted: #64748b;
+    --accent: #2563eb; /* blue */
+    --accent-2: #06b6d4; /* teal */
+    --soft: #eef6ff;
+    --radius: 14px;
+    --glass: rgba(255,255,255,0.7);
+    --shadow: 0 12px 28px rgba(16,24,40,0.08);
+}
+
+*{box-sizing: border-box;margin:0;padding:0;font-family: "Inter", "Segoe UI", system-ui, -apple-system, "Segoe UI Emoji", sans-serif;}
+
+body{
+    background: linear-gradient(180deg,var(--bg), #f0f7ff);
+    color: #0f172a;
+    padding: 20px;
+    -webkit-font-smoothing:antialiased;
+}
+
+/* Header */
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin-bottom:18px;
+}
+.header h1{
+    font-size:20px;
+    font-weight:700;
+    color:#083344;
+}
+.sleep-btn{
+    text-decoration:none;
+    background:linear-gradient(90deg,var(--accent), #3b82f6);
+    color:white;
+    padding:10px 14px;
+    border-radius:10px;
+    box-shadow: 0 8px 20px rgba(37,99,235,0.14);
+    font-weight:600;
+    font-size:14px;
+}
+
+/* Main wrapper */
+.main-wrap{
+    max-width:1000px;
+    margin:0 auto;
+}
+
+/* ---------- DESKTOP TABLE (visible on >= 768px) ---------- */
+.desktop-table{ display:block; }
+
+.table-card{
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: var(--shadow);
+    margin-bottom: 18px;
+    overflow: hidden;
+}
+
+/* table styling */
+.sleep-table{
+    width:100%;
+    border-collapse: separate;
+    border-spacing: 0 12px; /* separation between day groups */
+    min-width: 100%;
+}
+.sleep-table thead th{
+    text-align:left;
+    padding:12px 14px;
+    font-size:13px;
+    color: #0f172a;
+    background: transparent;
+    font-weight: 700;
+}
+.sleep-table tbody tr{
+    background: transparent;
+}
+.sleep-table td{
+    padding:12px 14px;
+    vertical-align: middle;
+    font-size:14px;
+    background: var(--card);
+}
+
+/* date cell looks like a pill */
+.date-cell{
+    background: linear-gradient(180deg,var(--soft), #e6f0ff);
+    color: var(--accent);
+    font-weight:700;
+    border-radius: 10px;
+    text-align:center;
+    width:140px;
+    box-shadow: inset 0 -6px 0 rgba(37,99,235,0.03);
+}
+
+/* group visual: make grouped rows appear like a single card */
+.group-start td{
+    border-top: 1px solid rgba(15,23,42,0.04);
+    border-bottom: 1px dashed rgba(15,23,42,0.04);
+}
+
+/* cell separators subtle */
+.sleep-table td:not(.date-cell){
+    border-bottom: 1px dashed rgba(15,23,42,0.04);
+    color: #0b2530;
+}
+
+/* hover highlight */
+.sleep-table tbody tr:hover td{
+    background: linear-gradient(90deg, rgba(6,182,212,0.03), rgba(37,99,235,0.02));
+    transform: translateY(-1px);
+    transition: all 160ms ease;
+}
+
+/* ---------- CARD LIST (mobile) - hidden on desktop ---------- */
+.card-list{ display:none; }
+
+/* day-card */
+.day-card{
+    background: linear-gradient(180deg, #ffffff, #fbfdff);
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 8px 20px rgba(15,23,42,0.06);
+    margin-bottom: 12px;
+    border: 1px solid rgba(15,23,42,0.03);
+}
+.day-card-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:10px;
+}
+.day-title{
+    font-weight:700;
+    color:#083344;
+    font-size:15px;
+}
+.day-sub{
+    font-size:13px;
+    color:var(--muted);
+    background: #f1f8ff;
+    padding:6px 10px;
+    border-radius:999px;
+}
+
+/* session list */
+.session-list{ list-style:none; display:flex; flex-direction:column; gap:8px; }
+.session{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px;
+    background: linear-gradient(180deg,#fbfdff,#fff);
+    border-radius:8px;
+    border:1px solid rgba(15,23,42,0.02);
+}
+.session .time{ font-weight:600; color:#0b2530; font-size:14px; }
+.session .meta{ font-size:13px; color:var(--muted); }
+
+/* ---------- Pagination styling (shared) ---------- */
+.pagination{
+    display:flex;
+    justify-content:center;
+    gap:8px;
+    margin-top:14px;
+    padding-top:8px;
+}
+.page-btn{
+    background:transparent;
+    border: 1px solid rgba(6,182,212,0.12);
+    color: #083344;
+    padding:8px 12px;
+    border-radius:10px;
+    min-width:42px;
+    font-weight:600;
+    cursor:pointer;
+    transition: all 160ms ease;
+    box-shadow: 0 6px 18px rgba(2,6,23,0.03);
+}
+.page-btn:hover{ transform: translateY(-3px); box-shadow: 0 12px 26px rgba(2,6,23,0.06); }
+.page-btn.active{
+    background: linear-gradient(90deg,var(--accent), #3b82f6);
+    color:#fff;
+    border-color: transparent;
+    box-shadow: 0 10px 24px rgba(37,99,235,0.18);
+}
+
+/* ---------- RESPONSIVE RULES ---------- */
+@media (max-width: 820px){
+    /* switch to mobile UI: hide table, show cards */
+    .desktop-table{ display:none; }
+    .card-list{ display:block; }
+
+    .main-wrap{ padding: 0 6px; }
+
+    /* Pagination mobile spacing */
+    .mobile-pag{ margin-bottom: 16px; }
+}
+
+/* small phones */
+@media (max-width: 420px){
+    .session{ flex-direction:column; align-items:flex-start; gap:6px; }
+    .session .time{ font-size:14px; }
+    .day-title{ font-size:15px; }
+    .sleep-btn{ padding:10px 12px; font-size:13px; }
+    .header h1{ font-size:18px; }
+}
+
+/* ADD THIS CSS */
+.header-nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sleep-btn:hover {
+    transform: translateY(-2px);
+}
+
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div class="header-nav">
+        <a href="/" class="sleep-btn">&larr; Back</a>
+        <h1>🛌 Sleep Tracker</h1>
+    </div>
+    <a href="/sleep-tracking/entry/" class="sleep-btn">+ Sleep Entry</a>
+</header>
+
+<main class="main-wrap">
+
+    <!-- DESKTOP TABLE (uses rowspan, elegant grouped look) -->
+    <section class="desktop-table">
+        <div class="table-card">
+            <table class="sleep-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Sleep Time</th>
+                        <th>Wake-up Time</th>
+                        <th>Duration</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Grouped day: 2 sessions -->
+                     {% for i in records %}
+                     {% if i.count > 1 %}
+                    <tr class="group-start">
+                        <td rowspan="{{ i.count }}" class="date-cell">{{i.date|date:"j M Y"}}</td>
+                        <td>{{i.entries.0.sleep_time|date:"h:i A"}}</td>
+                        <td>{{i.entries.0.wakeup_time|date:"h:i A"}}</td>
+                        <td>{{i.entries.0.duration_display|default:"-"}}</td>
+                    </tr>
+                    {% for entry in i.entries|slice:"1:" %}
+                    <tr>
+                        <td>{{entry.sleep_time|date:"h:i A"}}</td>
+                        <td>{{entry.wakeup_time|date:"h:i A"}}</td>
+                        <td>{{entry.duration_display|default:"-"}}</td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <!-- Single session day -->
+                    <tr class="group-start">
+                        <td class="date-cell">{{i.date|date:"j M Y"}}</td>
+                        <td>{{i.entries.0.sleep_time|date:"h:i A"}}</td>
+                        <td>{{i.entries.0.wakeup_time|date:"h:i A"}}</td>
+                        <td>{{i.entries.0.duration_display|default:"-"}}</td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% if records.has_next %}
+            <!-- Pagination (desktop) -->
+            <nav class="pagination" aria-label="Sleep records pages">
+                {% for page_num in records.paginator.page_range %}
+                    {% if records.number == page_num %}
+                        <button class="page-btn active">{{ page_num }}</button>
+                    {% else %}
+                        <a href="?page={{ page_num }}"><button class="page-btn">{{ page_num }}</button></a>
+                    {% endif %}
+                {% endfor %}
+            </nav>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- MOBILE CARD LIST (no horizontal scroll — attractive card UI) -->
+    <section class="card-list">
+        <!-- day card -->
+         {% for i in records %}
+        <article class="day-card">
+            <header class="day-card-header">
+                <div class="day-title">{{i.date|date:'j M Y'}}</div>
+                <div class="day-sub">{{i.count}} sessions</div>
+            </header>
+            {% for entry in i.entries %}
+            <ul class="session-list">
+                <li class="session">
+                    <div class="time">{{entry.sleep_time|date:"h:i A"}} → {{entry.wakeup_time|date:"h:i A"}}</div>
+                    <div class="meta">Duration: <strong>{{entry.duration_display|default:"-"}}</strong></div>
+                </li>
+            </ul>
+            {% endfor %}
+        </article>
+        {% endfor %}
+        <!-- Pagination (mobile) -->
+        {% if records.has_next %}
+        <nav class="pagination mobile-pag" aria-label="Sleep records pages">
+            {% for page_num in records.paginator.page_range %}
+                {% if records.number == page_num %}
+                    <button class="page-btn active">{{ page_num }}</button>
+                {% else %}
+                    <a href="?page={{ page_num }}"><button class="page-btn">{{ page_num }}</button></a>
+                {% endif %}
+            {% endfor %}
+        </nav>
+        {% endif %}
+    </section>
+
+</main>
+
+</body>
+</html>
